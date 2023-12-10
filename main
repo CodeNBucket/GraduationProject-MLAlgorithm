@@ -1,0 +1,76 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from gensim.models.doc2vec import Doc2Vec,TaggedDocument
+from nltk.tokenize import word_tokenize
+from sklearn.model_selection import train_test_split
+import gensim
+from sklearn.linear_model import LogisticRegression
+import random
+file_path = r"C:\Users\Turgut\Desktop\Dataset\output_review_yelpHotelData_NRYRcleaned.txt"
+text_file=open(file_path)
+reviews=text_file.readlines()#reviews contains all the text information
+text_file.close()
+file_path=r"C:\Users\Turgut\Desktop\Dataset\output_meta_yelpHotelData_NRYRcleaned.txt"
+meta_file=open(file_path)
+meta=meta_file.readlines()
+meta_file.close()
+labels=[]
+for label in meta:
+    labels.append(label.split()[4])
+#X_train,X_test, y_train, y_test = train_test_split( reviews, labels, random_state=0)
+
+def read_corpus(f): #Taggs the documents
+
+        for i, line in enumerate(f):
+            tokens = gensim.utils.simple_preprocess(line)
+            yield TaggedDocument(tokens, [i])
+
+train_corpus = list(read_corpus(reviews)) #Training set with tagged document(.tags,.words)
+model = Doc2Vec(vector_size=384, min_count=1, epochs=10,window=10)
+model.build_vocab(train_corpus)
+model.train(train_corpus, total_examples=model.corpus_count, epochs=model.epochs)
+model.save(r"C:\Users\Turgut\Desktop\Dataset\trained_model")
+
+
+ranks = []
+for doc_id in range(len(train_corpus)):
+    inferred_vector = model.infer_vector(train_corpus[doc_id].words) #takes the inferred vectors one by one
+    sims = model.dv.most_similar([inferred_vector], topn=len(model.dv)) #compares it to all other documents and list the docs most similar to least similar (doc_id,similarityscore)
+    rank = [docid for docid, sim in sims].index(doc_id)# finds the location of doc_id and stores it in the rank(if the inferred_vector is the most similar doc_id will be at the 1'st place(index[0]) which means it is working well)
+    ranks.append(rank)#stores them in rank
+
+
+dict={}
+for i in ranks:
+    if i==0:
+        if 0 in dict.keys():
+            dict[0]+=1
+        else:
+            dict[0]=1
+    else:
+        if 1 in dict.keys():
+            dict[1] += 1
+        else:
+            dict[1] = 1
+
+print(dict)#for better idea
+
+vectors=[]
+for i in range(len(train_corpus)):
+    vector=model.dv[i]
+    vectors.append(vector)#vectors contains vector embeddings of dataset
+
+X_train,X_test, y_train, y_test = train_test_split( vectors, labels, random_state=0)
+
+LogisticRegressionModel=LogisticRegression(class_weight={'N': 1, 'Y': 6})
+LogisticRegressionModel.fit(X_train,y_train)
+
+example_vector= model.infer_vector(['This', 'hotel', 'is', 'just', 'lame'])
+example_vector = np.array(example_vector).reshape(1, -1)
+prediction=LogisticRegressionModel.predict(example_vector)
+print(prediction)
+y_pred=LogisticRegressionModel.predict(X_test)
+print(y_pred[10:30])
+print(y_pred[240:270])
+print("Test set score: {:.2f}".format(LogisticRegressionModel.score(X_test, y_test)))
