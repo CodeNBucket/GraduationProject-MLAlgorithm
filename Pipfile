@@ -10,7 +10,7 @@ matplotlib = "*"
 scikit-learn = "*"
 networkx = "*"
 gensim = "*"
-jupyter = "*"
+node2vec = "*"
 
 [dev-packages]
 
