@@ -5,9 +5,9 @@ import numpy as np
 import joblib
 from gensim.models.doc2vec import Doc2Vec
 
-model_filename = r"C:\Users\Turgut\Desktop\Dataset\trained_logistic_regression_model.joblib"#load the LogisticRegression model
+model_filename = r"models/logistic_regression.joblib"#load the LogisticRegression model
 LogisticRegressionModel=joblib.load(model_filename)
-model=Doc2Vec.load(r"C:\Users\Turgut\Desktop\Dataset\trained_model")#load the Doc2Vec model
+model=Doc2Vec.load(r"models/doc2vec_model")#load the Doc2Vec model
 review=input("Write the review you want to test:")
 review = gensim.utils.simple_preprocess(review)
 review_vector= model.infer_vector(review)

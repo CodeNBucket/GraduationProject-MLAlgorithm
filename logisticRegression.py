@@ -5,7 +5,8 @@ from sklearn.linear_model import LogisticRegression
 from gensim.models.doc2vec import Doc2Vec
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-file_path=r"C:\Users\Turgut\Desktop\Dataset\output_meta_yelpHotelData_NRYRcleaned.txt"
+
+file_path=r"data/metadata.txt"
 meta_file=open(file_path)
 meta=meta_file.readlines()#meta contains all the meta_data and I used it just to get the labels
 meta_file.close()
@@ -13,7 +14,7 @@ meta_file.close()
 labels=[]
 for label in meta:
     labels.append(label.split()[4]) #labels of the revies are added to 'labels' one by one
-model=Doc2Vec.load(r"C:\Users\Turgut\Desktop\Dataset\trained_model")#load the model
+model=Doc2Vec.load(r"models/doc2vec_model")#load the model
 
 vectors=[]
 for i in range(model.corpus_count):
@@ -21,9 +22,6 @@ for i in range(model.corpus_count):
     vectors.append(vector)#vectors contains vector embeddings of dataset
 
 X_train,X_test, y_train, y_test = train_test_split( vectors, labels, random_state=1,stratify=labels)
-
-
-
 
 LogisticRegressionModel = LogisticRegression(class_weight={'N': 1, 'Y': 6},C=0.01)
 LogisticRegressionModel.fit(X_train, y_train)
@@ -57,5 +55,5 @@ y_pred_binary = label_encoder.transform(y_pred)
 
 roc_auc = roc_auc_score(y_true_binary, y_pred_binary)
 print("ROC-AUC:", roc_auc)
-model_filename = r"C:\Users\Turgut\Desktop\Dataset\trained_logistic_regression_model.joblib"
+model_filename = r"models/logistic_regression.joblib"
 joblib.dump(LogisticRegressionModel, model_filename)
