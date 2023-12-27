@@ -2,9 +2,10 @@ import pandas as pd
 from sklearn.manifold import TSNE
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegressionCV
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.metrics.pairwise import pairwise_distances
 from sklearn import preprocessing
+from sklearn.preprocessing import LabelEncoder
 
 import numpy as np
 
@@ -74,12 +75,21 @@ clf = LogisticRegressionCV(
     cv=10,
     tol=0.001,
     max_iter=1000,
-    scoring="roc_auc",
+    scoring="accuracy",
     verbose=False,
     multi_class="ovr",
     random_state=5434,
+    class_weight={'N': 1, 'Y': 6}
 )
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
+
+label_encoder = LabelEncoder()
+label_encoder.fit(y_test)
+y_true_binary = label_encoder.transform(y_test)
+y_pred_binary = label_encoder.transform(y_pred)
+
 accuracy = accuracy_score(y_test, y_pred)
+roc_auc = roc_auc_score(y_true_binary, y_pred_binary)
 print(accuracy)
+print(roc_auc)
