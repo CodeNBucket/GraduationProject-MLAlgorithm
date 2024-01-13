@@ -38,7 +38,8 @@ def read_corpus(f):  # Taggs the documents
 
 train_corpus = list(read_corpus(
     reviews))  # train_corpus contains the list of tokenized tagged documents, it will be used to test the accuracy of the doc2vec process
-model = Doc2Vec(vector_size=384, min_count=1, epochs=10, window=10, dm=1)
+model = Doc2Vec(vector_size=128, min_count=1, epochs=10, window=10, dm=1)
+model.wv.save_word2vec_format('models/doc2vec.wordvectors',binary=True)
 # vector size:dimensionality of the vector
 # min_count:ignores the words with total frequency lower than the value
 # epochs:number of iterations during training
