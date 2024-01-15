@@ -32,4 +32,7 @@ model = node2vec.fit(
     window=10
 )
 
-model.wv.save_word2vec_format('models/node2vec.wordvectors', binary=True)
+model.wv.save_word2vec_format(
+    'models/node2vec.wordvectors',
+    binary=True
+)
