@@ -21,6 +21,7 @@ def detectionServer():
     review = simple_preprocess(review)
     review_vectors = docModel.infer_vector(review)
     review_vectors = np.array(review_vectors).reshape(1, -1)
+
     prediction = logModel.predict(review_vectors)
     print("Predicted label: ", prediction)
     return prediction

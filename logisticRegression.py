@@ -5,7 +5,7 @@ from gensim.models import KeyedVectors
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score, confusion_matrix,accuracy_score
 
 metadata = pd.read_csv(
     'data/metadata.txt',
@@ -37,13 +37,12 @@ for i in metadata.index:
         nodeEmbeddings.get_vector(metadata['ReviewerId'][i]),
         nodeEmbeddings.get_vector(metadata['ProductId'][i])
     )
-    nodeTargets[i] = metadata['Label'][i]
-
-for i in metadata.index:
     nodeVectors[i] = np.append(
         nodeVectors[i],
         docEmbeddings[metadata['ReviewId'][i]]
     )
+    nodeTargets[i] = metadata['Label'][i]
+
 
 nodeVectors = np.array(nodeVectors)
 nodeTargets = np.array(nodeTargets)
@@ -75,6 +74,7 @@ model.fit(X_train, y_train)
 y_pred_prob_test = model.predict_proba(X_test)[:, 1]
 y_pred_test = model.predict(X_test)
 cm = confusion_matrix(y_test, y_pred_test)
+print(y_pred_test)
 
 print("confusion Matrix is :\n\n", cm)
 print("\n")
@@ -84,15 +84,16 @@ print("ROC-AUC score  test dataset: ",
 print("Precision score  test dataset: ",
       precision_score(y_test,
                       y_pred_test,
-                      pos_label='Y'))
+                      pos_label='N'))
 print("Recall score  test dataset: ",
       recall_score(y_test,
                    y_pred_test,
-                   pos_label='Y'))
+                   pos_label='N'))
 print("F1 score  test dataset : ",
       f1_score(y_test,
                y_pred_test,
-               pos_label='Y'))
+               pos_label='N'))
+print("Accuracy",accuracy_score(y_test,y_pred_test))
 # clf = LogisticRegressionCV(max_iter=8000)
 # clf.fit(X_train, y_train)
 # 
