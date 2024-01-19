@@ -1,6 +1,6 @@
 import pandas as pd
 import networkx as nx
-from node2vec import Node2Vec
+from node2vec import *
 
 metadata = pd.read_csv(
     'data/metadata.txt',
@@ -20,19 +20,22 @@ G.add_weighted_edges_from(
     metadata[['ReviewerId', 'ProductId', 'Rating']].values
 )
 
-node2vec = Node2Vec(
-    G,
-    dimensions=128,
-    walk_length=10,
-    num_walks=10,
-    workers=4
-)
+probs = defaultdict(dict)
 
-model = node2vec.fit(
-    window=10
-)
+for node in G.nodes():
+    probs[node]['probabilities'] = dict()
+
+cp = compute_probabilities(G, probs, 1, 1)
+
+walks = generate_random_walks(G, cp, 10, 10)
+
+model = Node2Vec(walks, 10, 128)
 
 model.wv.save_word2vec_format(
     'models/node2vec.wordvectors',
     binary=True
+)
+
+model.save(
+    'models/node2vec.model',
 )

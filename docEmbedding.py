@@ -50,3 +50,7 @@ model.dv.save_word2vec_format(
     'models/doc2vec.wordvectors',
     binary=True
 )
+
+model.save(
+    'models/doc2vec.model',
+)
