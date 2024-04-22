@@ -1,4 +1,7 @@
-venv/
+.venv/
+.vs/
+*.sln
+*.pyproj
 .idea/
 .ipynb_checkpoints/
 *.ipynb

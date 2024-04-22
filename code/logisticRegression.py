@@ -47,7 +47,7 @@ nodeTargets = np.array(nodeTargets)
 
 scale = StandardScaler()
 
-model = LogisticRegressionCV()
+model = LogisticRegressionCV(max_iter=8000, class_weight={"N": 0.14, "Y": 0.86})
 
 nodeVectors = scale.fit_transform(nodeVectors)
 
@@ -69,6 +69,3 @@ model.fit(X_train, y_train)
 y_pred_test = model.predict(X_test)
 
 print("Accuracy", accuracy_score(y_test, y_pred_test))
-
-
-
